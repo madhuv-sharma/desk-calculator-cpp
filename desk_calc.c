@@ -6,7 +6,8 @@
 
 using namespace std;
 
-enum Token_value {
+enum Token_value
+{
   FUNCTION, NAME, NUMBER, END,
   PLUS = '+', MINUS = '-', MUL = '*', DIV = '/',
   PRINT = ';', ASSIGIN = '=', LP = '(', RP = ')',
@@ -21,14 +22,12 @@ int no_of_errors;
 
 map < string, double > table;
 
-
 double error (const string & s);
 double message (const string & s);
 Token_value get_token ();
 double prim (bool get);
 double term (bool get);
 double expr (bool get);
-
 
 const char help[] = "DC: Desk Calculator\n\npress ctrl+Z to quit\n";
 
@@ -50,109 +49,98 @@ main (int argc, char *argv[])
       continue;
     cout << expr(false) << '\n';
   }
-
   return no_of_errors;
 }
 
-double
-message (const string & s)
+double message (const string & s)
 {
   cout << s << '\n';
   return 0;
 }
 
-double
-error (const string & s)
+double error (const string & s)
 {
   no_of_errors++;
   cerr << "Error:" << s << '\n';
   return 1;
 }
 
-double
-expr (bool get)
+double expr (bool get)
 {
   double left = term (get);
   for (;;)
-    switch (curr_tok) {
-    case PLUS:
-      {
-	left += term (true);
-	break;
-      }
-    case MINUS:
-      {
-	left -= term (true);
-	break;
-      }
-    default:
-      return left;
+    switch (curr_tok)
+    {
+	    case PLUS:
+	  		left += term (true);
+				break;
+	    case MINUS:
+	    	left -= term (true);
+				break;
+			default:
+	    	return left;
     }
 }
 
-double
-term (bool get)
+double term (bool get)
 {
   double left = prim (get);
   for (;;)
-    switch (curr_tok) {
-    case MUL: {
-      left *= term (true);
-      break;
-    }
-    case DIV: {
-      if (double d = prim (true)) {
-	left /= d;
-	break;
-      }
-      return error ("divide by 0");
-    }
-    case EXPO: {
-      left = pow (left, prim (true));
-      break;
-    }
-    default:
-      return left;
-    }
+    switch (curr_tok)
+		{
+			case MUL:
+				left *= term (true);
+				break;
+    	case DIV:
+				if (double d = prim (true)) 
+				{
+					left /= d;
+					break;
+      	}
+      	return error ("divide by 0");
+      case EXPO:
+				left = pow (left, prim (true));
+      	break;
+    	default:
+      	return left;
+		}
 }
 
-double
-prim (bool get)
+double prim (bool get)
 {
   if (get)
     get_token ();
 
-  switch (curr_tok) {
-  case MINUS: {
-    return (-expr (true));
-  }
-  case NUMBER: {
-    double v = number_value;
-    get_token ();
-    return v;
-  }
-  case NAME: {
+  switch (curr_tok)
+	{
+  	case MINUS:
+    	return (-expr (true));
+  	case NUMBER:
+			double v = number_value;
+    	get_token ();
+    	return v;
+		case NAME:
     //help
-    if (string_value == "help" || string_value == "Help"
-	|| string_value == "HELP") {
-      return message (help);
-    }
-    else if (string_value == "clear" || string_value == "Clear"
-	     || string_value == "CLEAR") {
-      cout.flush ();
-      return message (help);
-    }
-    else
-      //trignometry functions
-      if (string_value == "sin") {
-	if (get_token () == LP)
-	  return sin (expr (true));
-      }
-      else if (string_value == "cos") {
-	if (get_token () == LP)
-	  return cos (expr (true));
-      }
-      else if (string_value == "tan") {
+    	if (string_value == "help" || string_value == "Help" || string_value == "HELP") {
+      	return message (help);
+    	else if (string_value == "clear" || string_value == "Clear" || string_value == "CLEAR") {
+			{	
+				cout.flush ();
+      	return message (help);
+			}
+    	else
+      	//trignometry functions
+      	if (string_value == "sin")
+				{
+					if (get_token () == LP)
+	 	 			return sin (expr (true));
+      	}
+      	else if (string_value == "cos")
+				{
+					if (get_token () == LP)
+	  			return cos (expr (true));
+      	}
+      	else if (string_value == "tan") {
 	if (get_token () == LP)
 	  return tan (expr (true));
       }
